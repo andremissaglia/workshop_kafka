@@ -1,0 +1,115 @@
+version: '2.4'
+services:
+  frontend:
+    image: nginx
+    ports:
+      - 8080:80
+    volumes:
+      - ./frontend/rate-my-cat/dist/rate-my-cat:/usr/share/nginx/html
+    depends_on:
+      - backend
+  backend:
+    image: golang:1.16-alpine
+    volumes: 
+      - ./backend:/app
+    working_dir: /app
+    environment:
+      KAFKA_BROKERS: "kafka:9093"
+    command:
+      - go
+      - run
+      - ./cmd/backend
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: q1w2e3r4    
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/initdb:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/postgresql/data
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CREATE_TOPICS: "votes:8:1,ratings:8:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: LOCAL://localhost:9092,DOCKER://kafka:9093
+      KAFKA_LISTENERS: LOCAL://:9092,DOCKER://:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LOCAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+      KAFKA_LOG_DIRS: "/kafka"
+    volumes:
+      - kafkadata:/kafka
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "localhost:9092"]
+      interval: 5s
+      timeout: 1s
+      retries: 0
+  aggregator:
+    image: gradle:7
+    environment:
+      KAFKA_BROKERS: kafka:9093
+    volumes:
+      - ./aggregator:/code
+    working_dir: /code
+    command:
+      - gradle
+      - :run
+    depends_on:
+      kafka:
+        condition: service_healthy
+  replication:
+    image: golang:1.16-alpine
+    volumes: 
+      - ./backend:/app
+    working_dir: /app
+    environment:
+      KAFKA_BROKERS: "kafka:9093"
+    command:
+      - go
+      - run
+      - ./cmd/replication
+    depends_on:
+      db:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+  ksqldb-server:
+    image: confluentinc/ksqldb-server:0.18.0
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_BOOTSTRAP_SERVERS: kafka:9093
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"    
+    depends_on:
+      kafka:
+        condition: service_healthy
+  ksqldb-cli:
+    image: confluentinc/ksqldb-cli:0.18.0
+    container_name: ksqldb-cli
+    depends_on:
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
+volumes:
+  dbdata:
+  kafkadata:

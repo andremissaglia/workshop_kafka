@@ -1,0 +1,5 @@
+<div class="row">
+  <div class="col s12 m4" *ngFor="let cat of cats; trackBy: trackByFn">
+    <app-cat [cat]="cat" [rating]="cat.rating"></app-cat>
+  </div>
+</div>

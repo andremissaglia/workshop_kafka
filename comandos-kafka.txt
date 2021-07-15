@@ -1,0 +1,34 @@
+# Listar tópicos
+./kafka/bin/kafka-topics.sh \
+    --bootstrap-server localhost:9092 \
+    --list
+
+# Descrever um tópico
+./kafka/bin/kafka-topics.sh \
+    --bootstrap-server localhost:9092 \
+    --describe <tópico>
+
+# Consumir de um tópico desde o início
+./kafka/bin/kafka-console-consumer.sh \
+    --bootstrap-server localhost:9092 \
+    --from-beginning \
+    --topic <tópico>
+
+# Produzir em um tópico
+./kafka/bin/kafka-console-producer.sh \
+    --bootstrap-server localhost:9092 \
+    --topic <tópico>
+
+# Consumir de um tópico imprimindo a chave da mensagem
+./kafka/bin/kafka-console-consumer.sh \
+    --bootstrap-server localhost:9092 \
+    --from-beginning \
+    --property print.key=true \
+    --topic <tópico>
+
+# Produzir em um tópico especificando a chave da mensagem
+./kafka/bin/kafka-console-producer.sh \
+    --bootstrap-server localhost:9092 \
+    --property "parse.key=true" \
+    --property "key.separator=:" \
+    --topic <tópico>

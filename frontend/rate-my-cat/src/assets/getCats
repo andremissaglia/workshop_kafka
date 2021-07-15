@@ -1,0 +1,8 @@
+[
+  {"id": 1, "name":"Dr Nice", "rating": 3.4},
+  {"id": 2, "name":"Narco", "rating": 3.4},
+  {"id": 3, "name":"Bombasto", "rating": 3.4},
+  {"id": 4, "name":"Celeritas", "rating": 3.4},
+  {"id": 5, "name":"Magneta", "rating": 3.4},
+  {"id": 6, "name":"RubberMan", "rating": 3.4}
+]

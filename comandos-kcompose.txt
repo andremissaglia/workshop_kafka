@@ -1,0 +1,21 @@
+# Listar tópicos
+kcompose topic list
+
+# Descrever um tópico
+kcompose topic describe <tópico>
+
+# Consumir de um tópico desde o início
+kcompose consume <tópico> --from-beginning
+
+# Produzir em um tópico
+kcompose produce <tópico>
+
+# Consumir de um tópico imprimindo a chave da mensagem
+kcompose consume <tópico> \
+    --from-beginning \
+    --property print.key=true
+
+# Produzir em um tópico especificando a chave da mensagem
+kcompose produce <tópico> \
+    --property "parse.key=true" \
+    --property "key.separator=:"
