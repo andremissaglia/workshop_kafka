@@ -37,20 +37,7 @@ public class Main {
                 Consumed.with(stringSerde, stringSerde)
         );
 
-        textLines.mapValues((ValueMapper<String, Integer>) Integer::parseInt)
-                .groupByKey()
-                .aggregate(
-                        () -> new CountAndSum(0, 0),
-                        (key, value, aggregate) -> new CountAndSum(aggregate.sum + value, aggregate.count + 1),
-                        Materialized.with(stringSerde, countAndSumSerde)
-                )
-                .toStream()
-                .mapValues((countAndSum) -> String.valueOf((float) countAndSum.sum / countAndSum.count))
-                .to(
-                        destinationTopic,
-                        Produced.with(stringSerde, stringSerde)
-                )
-        ;
+        // TODO: Implement
 
         // Finish building and start executing
         Topology topology =  builder.build();
