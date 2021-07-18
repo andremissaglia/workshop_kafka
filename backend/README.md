@@ -37,6 +37,11 @@ gradlew.bat :run
 ## Rodando com o docker
 
 ```bash
-docker-compose up -d aggregator
+docker-compose up -d backend
 ```
 Obs: Se o comando acima falhar, provavelmente as dependências demoraram para subir. Tente rodar novamente.
+
+Obs2: Lembre-se sempre de reiniciar o container quando fizer alterações:
+```bash
+docker-compose restart backend
+```

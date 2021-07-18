@@ -20,6 +20,11 @@ docker-compose up -d
 ```
 Obs: Se o comando acima falhar, provavelmente as dependências demoraram para subir. Tente rodar novamente.
 
+Obs2: Lembre-se sempre de reiniciar o container quando fizer alterações:
+```bash
+docker-compose restart backend
+```
+
 Para parar a aplicação:
 ```
 docker-compose down
