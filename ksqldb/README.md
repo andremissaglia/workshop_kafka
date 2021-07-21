@@ -6,7 +6,7 @@ Com o ksql, podemos trabalhar mais facilmente com streaming no kafka, usando uma
 
 ```bash
 # Iniciar o servidor
-docker-compose up -d ksqldb-server
+docker-compose up -d ksqldb-cli
 
 # Rodar o cli
 docker-compose exec ksqldb-cli ksql http://ksqldb-server:8088
